@@ -1,6 +1,6 @@
-from datetime import datetime as dt
+from datetime import datetime as dt, timedelta as td
 
-from flask import Flask
+from flask import Flask, render_template
 from sqlalchemy.exc import IntegrityError
 
 from data import db_session
@@ -9,7 +9,7 @@ from data.users import User
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "89d5be8d17a5422d76807e1f3f53b2d3"
-
+app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 def add_people():
     session = db_session.create_session()
@@ -35,10 +35,17 @@ def add_jobs():
 
     jobs = [
         Job(team_leader=1, work_size=15, collaborators="2, 3", start_date=dt.now(), is_finished=False,
-            job="deployment of residential modules 1 and 2")
+            job="deployment of residential modules 1 and 2", end_date=(dt.now() + td(hours=10)))
     ]
     session.add_all(jobs)
     session.commit()
+
+
+@app.get("/")
+def index():
+    session = db_session.create_session()
+    jobs = session.query(Job).all()
+    return render_template("index.html", jobs=jobs, round=round)
 
 
 if __name__ == "__main__":
@@ -48,4 +55,4 @@ if __name__ == "__main__":
     except IntegrityError:
         pass
     add_jobs()
-    # app.run(host="localhost", port=8080, debug=True)
+    app.run(host="localhost", port=8080, debug=True)

@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 
 from .db_session import SqlAlchemyBase
-        
+
 
 class User(SqlAlchemyBase):
     __tablename__ = "users"
@@ -15,3 +15,6 @@ class User(SqlAlchemyBase):
     email = sa.Column(sa.String, unique=True)
     hashed_password = sa.Column(sa.String)
     modified_date = sa.Column(sa.DateTime)
+
+    def __repr__(self):
+        return f"<Colonist> {self.id} {self.surname} {self.name}"

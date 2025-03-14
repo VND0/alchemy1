@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="d-flex flex-column align-items-center container">
+        <h3 class="my-4">Works log</h3>
+        {% for job in jobs %}
+            <h4 class="align-self-start">Action #{{ loop.index }}</h4>
+            <table class="table table-sm">
+                <thead>
+                <tr class="table-secondary">
+                    <th scope="col">Title of activity</th>
+                    <th scope="col">Team leader</th>
+                    <th scope="col">Duration</th>
+                    <th scope="col">List of collaborators</th>
+                    <th scope="col">Is finished</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>{{ job.job }}</td>
+                    <td>{{ job.team_leader }}</td>
+                    <td>{{ round((job.end_date - job.start_date).total_seconds() / 60 / 60, 1) }} hours</td>
+                    <td>{{ job.collaborators }}</td>
+                    <td>Is {{ "" if job.is_finished else "not" }} finished</td>
+                </tr>
+                </tbody>
+            </table>
+        {% endfor %}
+    </div>
+{% endblock %}
