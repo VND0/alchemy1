@@ -1,7 +1,10 @@
+from datetime import datetime as dt
+
 from flask import Flask
 from sqlalchemy.exc import IntegrityError
 
 from data import db_session
+from data.job import Job
 from data.users import User
 
 app = Flask(__name__)
@@ -25,11 +28,24 @@ def add_people():
     session.commit()
 
 
+def add_jobs():
+    session = db_session.create_session()
+    if session.query(Job).one_or_none():
+        return
+
+    jobs = [
+        Job(team_leader=1, work_size=15, collaborators="2, 3", start_date=dt.now(), is_finished=False,
+            job="deployment of residential modules 1 and 2")
+    ]
+    session.add_all(jobs)
+    session.commit()
+
+
 if __name__ == "__main__":
     db_session.global_init("db/data.db")
     try:
         add_people()
     except IntegrityError:
         pass
-
+    add_jobs()
     # app.run(host="localhost", port=8080, debug=True)

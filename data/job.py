@@ -3,7 +3,7 @@ import sqlalchemy as sa
 from .db_session import SqlAlchemyBase
 
 
-class Jobs(SqlAlchemyBase):
+class Job(SqlAlchemyBase):
     __tablename__ = "jobs"
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
