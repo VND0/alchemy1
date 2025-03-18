@@ -4,7 +4,7 @@
     <form class="w-50 m-auto mb-5" action="" method="post" novalidate>
         {{ form.hidden_tag() }}
         {% if err %}
-        	<div class="alert alert-danger" role="alert">{{ err }}</div>
+            <div class="alert alert-danger" role="alert">{{ err }}</div>
         {% endif %}
         <p>
             {{ form.email.label }} <br>
@@ -31,6 +31,13 @@
             {{ form.surname.label }} <br>
             {{ form.surname(class="form-control") }} <br>
             {% for error in form.surname.errors %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.name.label }} <br>
+            {{ form.name(class="form-control") }} <br>
+            {% for error in form.name.errors %}
                 <div class="alert alert-danger">{{ error }}</div>
             {% endfor %}
         </p>
@@ -62,10 +69,10 @@
                 <div class="alert alert-danger">{{ error }}</div>
             {% endfor %}
         </p>
-            {{ form.submit(class="btn btn-primary", type="submit") }} <br>
-            {% for error in form.submit.errors %}
-                <div class="alert alert-danger">{{ error }}</div>
-            {% endfor %}
+        {{ form.submit(class="btn btn-primary", type="submit") }} <br>
+        {% for error in form.submit.errors %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endfor %}
 
     </form>
 {% endblock %}

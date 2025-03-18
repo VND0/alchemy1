@@ -47,17 +47,17 @@ def add_jobs():
 
 def handle_registration(form: RegistrationForm) -> str | None:
     try:
-        assert form.passwd == form.passwd_confirmation
+        assert form.passwd.data == form.passwd_confirmation.data
 
         user = User(
-            surname=form.surname,
-            name=form.name,
-            age=form.age,
-            position=form.position,
-            speciality=form.speciality,
-            address=form.address,
-            email=form.email,
-            hashed_password=generate_password_hash(form.passwd)
+            surname=form.surname.data,
+            name=form.name.data,
+            age=form.age.data,
+            position=form.position.data,
+            speciality=form.speciality.data,
+            address=form.address.data,
+            email=form.email.data,
+            hashed_password=generate_password_hash(form.passwd.data)
         )
         session = create_session()
         session.add(user)
@@ -65,16 +65,15 @@ def handle_registration(form: RegistrationForm) -> str | None:
     except AssertionError:
         return "Passwords are not equal"
     except IntegrityError:
-        return "User already exists or some data is mailformed"
+        return "User already exists or some data is malformed"
 
 
 @app.route("/register", methods=["POST", "GET"])
 def register():
     err = None
     form = RegistrationForm()
-    if form.validate_on_submit():  # Почему тут в иф не заходит?
+    if form.validate_on_submit():
         err = handle_registration(form)
-        print(err)
         if err is None:
             return redirect("index")
 

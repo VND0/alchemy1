@@ -9,7 +9,7 @@ class RegistrationForm(FlaskForm):
     email = EmailField("Email", validators=[DataRequired()])
     passwd = PasswordField("Password", validators=[DataRequired()])
     passwd_confirmation = PasswordField("Repeat password", validators=[DataRequired()])
-    surname = StringField("Surname",validators=[ DataRequired()])
+    surname = StringField("Surname", validators=[DataRequired()])
     name = StringField("Name", validators=[DataRequired()])
     age = IntegerField("Age", validators=[DataRequired()])
     position = StringField("Position", validators=[DataRequired()])
