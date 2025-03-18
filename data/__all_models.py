@@ -1,1 +1,1 @@
-from data import users, job
+from data import users, job, departments
