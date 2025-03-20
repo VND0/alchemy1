@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
     <h3 class="text-center">Register Form</h3>
-    <form class="w-50 m-auto mb-5" action="" method="post" novalidate>
+    <form class="w-50 m-auto mb-5" method="post">
         {{ form.hidden_tag() }}
         {% if err %}
             <div class="alert alert-danger" role="alert">{{ err }}</div>
@@ -69,7 +69,8 @@
                 <div class="alert alert-danger">{{ error }}</div>
             {% endfor %}
         </p>
-        {{ form.submit(class="btn btn-primary", type="submit") }} <br>
+        <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
+        <p>{{ form.submit(class="btn btn-primary", type="submit") }}</p>
         {% for error in form.submit.errors %}
             <div class="alert alert-danger">{{ error }}</div>
         {% endfor %}

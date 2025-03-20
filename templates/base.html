@@ -16,7 +16,17 @@
 <body>
 <div class="py-1 px-4 bg-dark-subtle d-flex justify-content-between align-items-center">
     <h1>Миссия Колонизация Марса</h1>
-    <p class="m-0">Mars One</p>
+    <div class="d-flex gap-2 align-items-center">
+        {% if current_user.is_authenticated %}
+            <p class="m-0 fs-5">{{ current_user.name }}</p>
+            <a href="/logout" class="btn btn-secondary">Выйти</a>
+        {% else %}
+            <a href="/register" class="btn btn-secondary">Регистрация</a>
+            <a href="/login" class="btn btn-secondary">Авторизация</a>
+        {% endif %}
+    </div>
+
+
 </div>
 <h4>И на Марсе будут яблони цвести!</h4>
 {% block content %}

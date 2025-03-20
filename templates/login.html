@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h3 class="text-center">Authorization form</h3>
+    <form class="w-50 m-auto mb-5" method="post">
+        {{ form.hidden_tag() }}
+        {% if err %}
+            <div class="alert alert-danger" role="alert">{{ err }}</div>
+        {% endif %}
+        <p>
+            {{ form.email.label }} <br>
+            {{ form.email(class="form-control") }} <br>
+            {% for error in form.email.errors %}
+                <span class="alert alert-danger">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.password.label }} <br>
+            {{ form.password(class="form-control") }} <br>
+            {% for error in form.password.errors %}
+                <span class="alert alert-danger">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
+        <p>{{ form.submit(class="btn btn-primary", type="submit") }}</p>
+        {% for error in form.submit.errors %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endfor %}
+    </form>
+{% endblock %}
