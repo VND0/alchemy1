@@ -2,10 +2,15 @@
 {% block content %}
     <div class="d-flex flex-column align-items-center container">
         <h3 class="my-4">Works log</h3>
-        {% for job in jobs %}
-            <h4 class="align-self-start">Action #{{ loop.index }}</h4>
-            <table class="table table-sm">
+        <table class="table table-sm">
+
+            {% for job in jobs %}
                 <thead>
+                <tr>
+                    <td colspan="5">
+                        <h4 class="align-self-start">Action #{{ loop.index }}</h4>
+                    </td>
+                </tr>
                 <tr class="table-secondary">
                     <th scope="col">Title of activity</th>
                     <th scope="col">Team leader</th>
@@ -23,7 +28,8 @@
                     <td>Is {{ "" if job.is_finished else "not" }} finished</td>
                 </tr>
                 </tbody>
-            </table>
-        {% endfor %}
+            {% endfor %}
+        </table>
+
     </div>
 {% endblock %}

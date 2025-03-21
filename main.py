@@ -1,4 +1,4 @@
-from datetime import datetime as dt, timedelta as td
+from datetime import datetime as dt, timedelta as td, date
 
 from flask import Flask, render_template, redirect
 from flask_login import LoginManager, login_required, logout_user, current_user, login_user
@@ -10,6 +10,7 @@ from data.db_session import create_session
 from data.job import Job
 from data.users import User
 from forms.auth import LoginForm
+from forms.job import JobForm
 from forms.registration import RegistrationForm
 
 app = Flask(__name__)
@@ -56,7 +57,7 @@ def add_people():
 
 def add_jobs():
     session = db_session.create_session()
-    if session.query(Job).one_or_none():
+    if session.query(Job).first():
         return
 
     jobs = [
@@ -130,6 +131,37 @@ def login():
 def logout():
     logout_user()
     return redirect("/")
+
+
+def add_job(form: JobForm):
+    job = Job(
+        team_leader=form.lead_id.data,
+        job=form.title.data,
+        work_size=form.work_size.data,
+        collaborators=form.collab_list.data,
+        start_date=date.today(),
+        end_date=(dt.now() + td(hours=form.work_size.data)).date(),
+        is_finished=form.is_finished.data
+    )
+    try:
+        session = db_session.create_session()
+        session.add(job)
+        session.commit()
+    except IntegrityError:
+        return "An error occurred. Maybe the problem is wrong team leader's id."
+
+
+@app.route("/new-job", methods=["POST", "GET"])
+@login_required  # Странно, если любой посетитель сможет менять информацию
+def new_job():
+    err = None
+    form = JobForm()
+    if form.validate_on_submit():
+        err = add_job(form)
+        if err is None:
+            return redirect("/")
+
+    return render_template("add_job.html", title="Adding a job", err=err, form=form)
 
 
 @app.get("/")
