@@ -1,15 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="d-flex flex-column align-items-center container">
-        <h3 class="my-4">Works log</h3>
+    <div class="container">
+        <h3 class="my-4 text-center">Works log</h3>
+        <a href="/new-job" class="btn btn-secondary">Add job</a>
         <table class="table table-sm">
-
             {% for job in jobs %}
                 <thead>
                 <tr>
                     <td colspan="5">
-                        <h4 class="align-self-start">Action #{{ loop.index }}</h4>
+                        <p class="align-self-start fs-3">Action #{{ loop.index }}</p>
                     </td>
+                </tr>
+                <tr>
+                    <td><a href="/del-job?which={{ job.id }}" class="btn btn-danger">Удалить</a></td>
                 </tr>
                 <tr class="table-secondary">
                     <th scope="col">Title of activity</th>

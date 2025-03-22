@@ -1,6 +1,6 @@
 from datetime import datetime as dt, timedelta as td, date
 
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, request, abort
 from flask_login import LoginManager, login_required, logout_user, current_user, login_user
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -62,7 +62,7 @@ def add_jobs():
 
     jobs = [
         Job(team_leader=1, work_size=15, collaborators="2, 3", start_date=dt.now(), is_finished=False,
-            job="deployment of residential modules 1 and 2", end_date=(dt.now() + td(hours=10)))
+            job="deployment of residential modules 1 and 2", end_date=(dt.now() + td(hours=10)), creator=1)
     ]
     session.add_all(jobs)
     session.commit()
@@ -141,7 +141,8 @@ def add_job(form: JobForm):
         collaborators=form.collab_list.data,
         start_date=date.today(),
         end_date=(dt.now() + td(hours=form.work_size.data)).date(),
-        is_finished=form.is_finished.data
+        is_finished=form.is_finished.data,
+        creator=current_user.id
     )
     try:
         session = db_session.create_session()
@@ -152,7 +153,7 @@ def add_job(form: JobForm):
 
 
 @app.route("/new-job", methods=["POST", "GET"])
-@login_required  # Странно, если любой посетитель сможет менять информацию
+@login_required
 def new_job():
     err = None
     form = JobForm()
@@ -162,6 +163,24 @@ def new_job():
             return redirect("/")
 
     return render_template("add_job.html", title="Adding a job", err=err, form=form)
+
+
+@app.get("/del-job")
+@login_required
+def del_job():
+    who = current_user.id
+    what = request.args.get("which")
+
+    session = db_session.create_session()
+    job = session.query(Job).filter(Job.id == what).one_or_none()
+    if job is None:
+        abort(400)
+    if job.creator != who and who != 1:
+        abort(403)
+
+    session.delete(job)
+    session.commit()
+    return redirect("/")
 
 
 @app.get("/")
