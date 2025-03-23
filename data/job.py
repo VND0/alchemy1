@@ -15,4 +15,3 @@ class Job(SqlAlchemyBase):
     start_date = sa.Column(sa.Date)
     end_date = sa.Column(sa.Date)
     is_finished = sa.Column(sa.Boolean)
-    creator = sa.Column(sa.Integer, ForeignKey("users.id"))

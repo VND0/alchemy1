@@ -62,7 +62,7 @@ def add_jobs():
 
     jobs = [
         Job(team_leader=1, work_size=15, collaborators="2, 3", start_date=dt.now(), is_finished=False,
-            job="deployment of residential modules 1 and 2", end_date=(dt.now() + td(hours=10)), creator=1)
+            job="deployment of residential modules 1 and 2", end_date=(dt.now() + td(hours=10)))
     ]
     session.add_all(jobs)
     session.commit()
@@ -134,6 +134,7 @@ def logout():
 
 
 def add_job(form: JobForm):
+    print(form.work_size.data)
     job = Job(
         team_leader=form.lead_id.data,
         job=form.title.data,
@@ -142,7 +143,6 @@ def add_job(form: JobForm):
         start_date=date.today(),
         end_date=(dt.now() + td(hours=form.work_size.data)).date(),
         is_finished=form.is_finished.data,
-        creator=current_user.id
     )
     try:
         session = db_session.create_session()
@@ -175,7 +175,7 @@ def del_job():
     job = session.query(Job).filter(Job.id == what).one_or_none()
     if job is None:
         abort(400)
-    if job.creator != who and who != 1:
+    if job.team_leader != who and who != 1:
         abort(403)
 
     session.delete(job)
