@@ -1,3 +1,5 @@
+from typing import Any
+
 import sqlalchemy as sa
 from flask_login import UserMixin
 from sqlalchemy.orm import relationship

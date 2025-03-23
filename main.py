@@ -13,10 +13,12 @@ from data.users import User
 from forms.auth import LoginForm
 from forms.job import JobForm
 from forms.registration import RegistrationForm
+import jobs_api
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "89d5be8d17a5422d76807e1f3f53b2d3"
 app.config["TEMPLATES_AUTO_RELOAD"] = True
+app.register_blueprint(jobs_api.bp)
 
 login_manager = LoginManager()
 login_manager.init_app(app)

@@ -1,6 +1,7 @@
 import sqlalchemy as sa
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
+from typing import Any
 
 from .db_session import SqlAlchemyBase
 
