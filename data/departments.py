@@ -14,3 +14,15 @@ class Department(SqlAlchemyBase):
     email = sa.Column(sa.String)
 
     user = relationship("User")
+
+    def serialize(self, exclude: list[str] = None) -> dict[str, Any]:
+        if exclude is None:
+            exclude = []
+        data = {}
+        for col in self.__table__.columns:
+            attr = col.name
+            if attr in exclude:
+                continue
+            data[attr] = getattr(self, attr)
+
+        return data

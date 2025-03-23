@@ -22,3 +22,15 @@ class User(SqlAlchemyBase, UserMixin):
 
     def __repr__(self):
         return f"<Colonist> {self.id} {self.surname} {self.name}"
+
+    def serialize(self, exclude: list[str] = None) -> dict[str, Any]:
+        if exclude is None:
+            exclude = []
+        data = {}
+        for col in self.__table__.columns:
+            attr = col.name
+            if attr in exclude:
+                continue
+            data[attr] = getattr(self, attr)
+
+        return data

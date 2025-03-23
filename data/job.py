@@ -1,3 +1,5 @@
+from typing import Any
+
 import sqlalchemy as sa
 
 from .db_session import SqlAlchemyBase
@@ -22,3 +24,15 @@ class Job(EmptyJob, SqlAlchemyBase):
     start_date = sa.Column(sa.Date)
     end_date = sa.Column(sa.Date)
     is_finished = sa.Column(sa.Boolean)
+
+    def serialize(self, exclude: list[str] = None) -> dict[str, Any]:
+        if exclude is None:
+            exclude = []
+        data = {}
+        for col in self.__table__.columns:
+            attr = col.name
+            if attr in exclude:
+                continue
+            data[attr] = getattr(self, attr)
+
+        return data
