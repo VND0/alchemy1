@@ -2,7 +2,7 @@
 {% block content %}
     <div class="container">
         <h3 class="my-4 text-center">Works log</h3>
-        <a href="/new-job" class="btn btn-secondary">Add job</a>
+        <a href="/new-job" class="btn btn-outline-secondary">Add job</a>
         <table class="table table-sm">
             {% for job in jobs %}
                 <thead>
@@ -12,7 +12,10 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><a href="/del-job?which={{ job.id }}" class="btn btn-danger">Удалить</a></td>
+                    <td>
+                        <a href="/del-job?which={{ job.id }}" class="btn btn-outline-danger">Delete</a>
+                        <a href="/edit-job/{{ job.id }}" class="btn btn-outline-warning">Edit</a>
+                    </td>
                 </tr>
                 <tr class="table-secondary">
                     <th scope="col">Title of activity</th>

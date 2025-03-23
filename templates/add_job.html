@@ -9,22 +9,22 @@
             {% endif %}
             <p>
                 {{ form.title.label }} <br>
-                {{ form.title(class="form-control") }}
+                {{ form.title(class="form-control", value=(job.job or "")) }}
             </p>
             <p>
                 {{ form.lead_id.label }} <br>
-                {{ form.lead_id(class="form-control") }}
+                {{ form.lead_id(class="form-control", value=job.team_leader) }}
             </p>
             <p>
                 {{ form.work_size.label }} <br>
-                {{ form.work_size(class="form-control") }}
+                {{ form.work_size(class="form-control", value=job.work_size) }}
             </p>
             <p>
                 {{ form.collab_list.label }} <br>
-                {{ form.collab_list(class="form-control") }}
+                {{ form.collab_list(class="form-control", value=(job.collaborators or "")) }}
             </p>
             <p>
-                {{ form.is_finished() }} {{ form.is_finished.label }}
+                {{ form.is_finished(checked=(True if job.is_finished else False)) }} {{ form.is_finished.label }}
             </p>
             <p>
                 {{ form.submit(class="btn btn-primary") }}

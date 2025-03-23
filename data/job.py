@@ -1,10 +1,17 @@
 import sqlalchemy as sa
-from sqlalchemy import ForeignKey
 
 from .db_session import SqlAlchemyBase
 
 
-class Job(SqlAlchemyBase):
+class EmptyJob:
+    job = None
+    team_leader = None
+    work_size = None
+    collaborators = None
+    is_finished = None
+
+
+class Job(EmptyJob, SqlAlchemyBase):
     __tablename__ = "jobs"
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)

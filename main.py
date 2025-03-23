@@ -3,11 +3,12 @@ from datetime import datetime as dt, timedelta as td, date
 from flask import Flask, render_template, redirect, request, abort
 from flask_login import LoginManager, login_required, logout_user, current_user, login_user
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from data import db_session
 from data.db_session import create_session
-from data.job import Job
+from data.job import Job, EmptyJob
 from data.users import User
 from forms.auth import LoginForm
 from forms.job import JobForm
@@ -162,7 +163,7 @@ def new_job():
         if err is None:
             return redirect("/")
 
-    return render_template("add_job.html", title="Adding a job", err=err, form=form)
+    return render_template("add_job.html", title="Adding a job", err=err, form=form, job=EmptyJob())
 
 
 @app.get("/del-job")
@@ -181,6 +182,34 @@ def del_job():
     session.delete(job)
     session.commit()
     return redirect("/")
+
+
+def apply_job_changes(form: JobForm, job: Job, session: Session):
+    job.job = form.title.data
+    job.team_leader = form.lead_id.data
+    job.work_size = form.work_size.data
+    job.collaborators = form.collab_list.data
+    job.is_finished = form.is_finished.data
+
+    session.commit()
+
+
+@app.route("/edit-job/<int:job_id>", methods=["POST", "GET"])
+@login_required
+def edit_job(job_id: int):
+    session = db_session.create_session()
+    job = session.query(Job).filter(Job.id == job_id).one_or_none()
+    if not job:
+        abort(400)
+    if current_user.id not in (job.team_leader, 1):
+        abort(403)
+
+    form = JobForm()
+    if form.validate_on_submit():
+        apply_job_changes(form, job, session)
+        return redirect("/")
+
+    return render_template("add_job.html", form=form, job=job)
 
 
 @app.get("/")
