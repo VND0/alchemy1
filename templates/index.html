@@ -2,19 +2,19 @@
 {% block content %}
     <div class="container">
         <h3 class="my-4 text-center">Works log</h3>
-        <a href="/new-job" class="btn btn-outline-secondary">Add job</a>
+        <a href="/new-job" class="btn btn-secondary">Add job</a>
         <table class="table table-sm">
             {% for job in jobs %}
                 <thead>
                 <tr>
                     <td colspan="5">
-                        <p class="align-self-start fs-3">Action #{{ loop.index }}</p>
+                        <p class="align-self-start fs-3 m-0 fw-semibold">Action #{{ loop.index }}</p>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <a href="/del-job?which={{ job.id }}" class="btn btn-outline-danger">Delete</a>
-                        <a href="/edit-job/{{ job.id }}" class="btn btn-outline-warning">Edit</a>
+                        <a href="/del-job?which={{ job.id }}" class="btn btn-danger">Delete job</a>
+                        <a href="/edit-job/{{ job.id }}" class="btn btn-warning">Edit job</a>
                     </td>
                 </tr>
                 <tr class="table-secondary">
