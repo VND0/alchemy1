@@ -13,7 +13,7 @@
                         <p class="align-self-start fs-3 m-0 fw-medium">Action #{{ loop.index }}</p>
                     </td>
                 </tr>
-                {% if current_user.is_authenticated %}
+                {% if current_user.is_authenticated and current_user.id in (job.team_leader, 1) %}
                     <tr>
                         <td>
                             <a href="/del-job?which={{ job.id }}" class="btn btn-danger">Delete job</a>
