@@ -80,8 +80,8 @@ def handle_jobs():
         return add_job()
 
 
-@bp.get("/jobs/<job_id>")
-def get_job(job_id):
+@bp.route("/jobs/<job_id>", methods=["GET", "DELETE"])
+def handle_job(job_id):
     session = db_session.create_session()
     try:
         job = session.query(Job).filter(Job.id == int(job_id)).one()
@@ -89,5 +89,11 @@ def get_job(job_id):
         return form_error("Id is not an integer")
     except NoResultFound:
         return form_error("Couldn't find job with this id")
+    job_data = job.serialize()
 
-    return jsonify(job.serialize())
+    if request.method == "GET":
+        return jsonify(job_data)
+    elif request.method == "DELETE":
+        session.delete(job)
+        session.commit()
+        return jsonify({"deleted": job_data})
