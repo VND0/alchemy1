@@ -2,10 +2,13 @@ from datetime import datetime as dt, timedelta as td, date
 
 from flask import Flask, render_template, redirect, request, abort
 from flask_login import LoginManager, login_required, logout_user, current_user, login_user
+from flask_restful import Api
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from werkzeug.security import generate_password_hash, check_password_hash
 
+import jobs_api
+import users_resource
 from data import db_session
 from data.db_session import create_session
 from data.job import Job, EmptyJob
@@ -13,15 +16,16 @@ from data.users import User
 from forms.auth import LoginForm
 from forms.job import JobForm
 from forms.registration import RegistrationForm
-import jobs_api
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "89d5be8d17a5422d76807e1f3f53b2d3"
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.register_blueprint(jobs_api.bp)
-
 login_manager = LoginManager()
 login_manager.init_app(app)
+api = Api(app)
+api.add_resource(users_resource.UsersListResource, "/api/v2/users")
+api.add_resource(users_resource.UsersResource, "/api/v2/users/<int:user_id>")
 
 
 @login_manager.user_loader
