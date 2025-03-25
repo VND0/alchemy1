@@ -1,8 +1,10 @@
+import json
 from datetime import datetime as dt, timedelta as td, date
 from typing import Any
 
 from flask import Blueprint, jsonify, Response, make_response, request
 from sqlalchemy.exc import NoResultFound, IntegrityError
+from werkzeug.exceptions import HTTPException
 
 from data import db_session
 from data.job import Job
@@ -13,6 +15,21 @@ bp = Blueprint(
     template_folder="templates",
     url_prefix="/api"
 )
+
+
+@bp.errorhandler(HTTPException)
+def handle_exception(e):
+    """Return JSON instead of HTML for HTTP errors."""
+    # start with the correct headers and status code from the error
+    response = e.get_response()
+    # replace the body with JSON
+    response.data = json.dumps({
+        "code": e.code,
+        "name": e.name,
+        "description": e.description,
+    })
+    response.content_type = "application/json"
+    return response
 
 
 def form_error(message: Any, status_code: int = 400) -> Response:
