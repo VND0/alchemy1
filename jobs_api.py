@@ -80,7 +80,29 @@ def handle_jobs():
         return add_job()
 
 
-@bp.route("/jobs/<job_id>", methods=["GET", "DELETE"])
+def edit_job(job_id: int):
+    upd_object = request.get_json()
+    session = db_session.create_session()
+
+    job = session.query(Job).filter(Job.id == job_id).one()
+    for col in job.__table__.columns:
+        attr = col.name
+        if attr == "id" and "id" in upd_object:
+            return form_error("Can't edit ID")
+        new_val = upd_object.get(attr, getattr(job, attr))
+        if not (type(new_val) is type(getattr(job, attr))):
+            return form_error(f"{attr} has wrong datatype")
+        setattr(job, attr, new_val)
+    try:
+        session.commit()
+    except Exception as e:
+        return form_error(f"DB error: {type(e)}")
+
+    session.refresh(job)
+    return jsonify(job.serialize())
+
+
+@bp.route("/jobs/<job_id>", methods=["GET", "DELETE", "PUT"])
 def handle_job(job_id):
     session = db_session.create_session()
     try:
@@ -97,3 +119,5 @@ def handle_job(job_id):
         session.delete(job)
         session.commit()
         return jsonify({"deleted": job_data})
+    elif request.method == "PUT":
+        return edit_job(job_id)
