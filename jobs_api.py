@@ -1,7 +1,8 @@
+from datetime import datetime as dt, timedelta as td, date
 from typing import Any
 
-from flask import Blueprint, jsonify, Response, make_response
-from sqlalchemy.exc import NoResultFound
+from flask import Blueprint, jsonify, Response, make_response, request
+from sqlalchemy.exc import NoResultFound, IntegrityError
 
 from data import db_session
 from data.job import Job
@@ -15,14 +16,51 @@ bp = Blueprint(
 
 
 def form_error(message: Any, status_code: int = 400) -> Response:
-    return make_response({"status": "error", "message": message}, status_code)
+    response = make_response({"status": "error", "message": message}, status_code)
+    response.headers["Content-Type"] = "application/json"
+    return response
 
 
-@bp.get("/jobs")
 def get_jobs():
     session = db_session.create_session()
     jobs = session.query(Job).all()
     return jsonify([j.serialize() for j in jobs])
+
+
+def add_job():
+    data = request.get_json()
+    session = db_session.create_session()
+    try:
+        new_job = Job(
+            job=data["job"],
+            team_leader=data["team_leader"],
+            work_size=data["work_size"],
+            collaborators=data["collaborators"],
+            is_finished=data["is_finished"],
+            start_date=date.today(),
+            end_date=(dt.now() + td(hours=data["work_size"])).date(),
+        )
+    except KeyError:
+        return form_error("Not enough data")
+    except TypeError:
+        return form_error("Some arguments are malformed")
+    try:
+        session.add(new_job)
+        session.commit()
+    except IntegrityError:
+        return form_error("Conflict with existing data", 409)
+    except Exception as e:
+        return form_error(f"{type(e): some arguments are malformed}")
+    session.refresh(new_job)
+    return jsonify(new_job.serialize())
+
+
+@bp.route("/jobs", methods=["POST", "GET"])
+def handle_jobs():
+    if request.method == "GET":
+        return get_jobs()
+    elif request.method == "POST":
+        return add_job()
 
 
 @bp.get("/jobs/<job_id>")
