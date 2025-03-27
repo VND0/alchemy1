@@ -25,7 +25,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 api = Api(app)
 api.add_resource(users_resource.UsersListResource, "/api/v2/users")
-api.add_resource(users_resource.UsersResource, "/api/v2/users/<int:user_id>")
+api.add_resource(users_resource.UsersResource, "/api/v2/users/<int(signed=True):user_id>")
 
 
 @login_manager.user_loader
