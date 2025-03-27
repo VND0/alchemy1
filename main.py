@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from werkzeug.security import generate_password_hash, check_password_hash
 
 import jobs_api
+import users_api
 import users_resource
 from data import db_session
 from data.db_session import create_session
@@ -20,9 +21,13 @@ from forms.registration import RegistrationForm
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "89d5be8d17a5422d76807e1f3f53b2d3"
 app.config["TEMPLATES_AUTO_RELOAD"] = True
+
 app.register_blueprint(jobs_api.bp)
+app.register_blueprint(users_api.bp)
+
 login_manager = LoginManager()
 login_manager.init_app(app)
+
 api = Api(app)
 api.add_resource(users_resource.UsersListResource, "/api/v2/users")
 api.add_resource(users_resource.UsersResource, "/api/v2/users/<int(signed=True):user_id>")
