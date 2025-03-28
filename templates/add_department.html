@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="px-5 mx-auto" style="max-width: 800px;">
+        <h3 class="text-center">{{ title }}</h3>
+        <form class="mt-5" method="post">
+            {{ form.hidden_tag() }}
+            {% if err %}
+                <div class="alert alert-danger">{{ err }}</div>
+            {% endif %}
+            <p>
+                {{ form.title.label }} <br>
+                {{ form.title(class="form-control", value=(department.title or "")) }}
+            </p>
+            <p>
+                {{ form.chief.label }} <br>
+                {{ form.chief(class="form-control", value=department.chief or 0) }}
+            </p>
+            <p>
+                {{ form.members.label }} <br>
+                {{ form.members(class="form-control", value=(department.members or "")) }}
+            </p>
+            <p>
+                {{ form.email.label }} <br>
+                {{ form.email(class="form-control", value=(department.email or "")) }}
+            </p>
+            <p>
+                {{ form.submit(class="btn btn-primary") }}
+            </p>
+        </form>
+    </div>
+{% endblock %}

@@ -4,6 +4,7 @@
         <h3 class="my-4 text-center">Works log</h3>
         {% if current_user.is_authenticated %}
             <a href="/new-job" class="btn btn-secondary">Add job</a>
+            <a href="/departments" class="btn btn-secondary">Go to Departments</a>
         {% endif %}
         <table class="table table-sm">
             {% for job in jobs %}

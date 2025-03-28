@@ -1,12 +1,20 @@
+from typing import Any
+
 import sqlalchemy as sa
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
-from typing import Any
 
 from .db_session import SqlAlchemyBase
 
 
-class Department(SqlAlchemyBase):
+class EmptyDepartment:
+    title = None
+    chief = None
+    members = None
+    email = None
+
+
+class Department(EmptyDepartment, SqlAlchemyBase):
     __tablename__ = "departments"
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
     title = sa.Column(sa.String)

@@ -13,9 +13,11 @@ import users_api
 import users_resource
 from data import db_session
 from data.db_session import create_session
+from data.departments import Department, EmptyDepartment
 from data.job import Job, EmptyJob
 from data.users import User
 from forms.auth import LoginForm
+from forms.department import DepartmentForm
 from forms.job import JobForm
 from forms.registration import RegistrationForm
 
@@ -226,6 +228,74 @@ def edit_job(job_id: int):
         return redirect("/")
 
     return render_template("add_job.html", form=form, job=job)
+
+
+def add_department(form: DepartmentForm) -> str | None:
+    session = db_session.create_session()
+    new_dep = Department(
+        title=form.title.data,
+        chief=form.chief.data,
+        members=form.members.data,
+        email=form.email.data
+    )
+    try:
+        session.add(new_dep)
+        session.commit()
+    except IntegrityError:
+        return "Ошибка базы данных"
+
+
+@app.route("/new-dep", methods=["POST", "GET"])
+@login_required
+def new_department():
+    err = None
+    form = DepartmentForm()
+    if form.validate_on_submit():
+        err = add_department(form)
+        if err is None:
+            return redirect("/departments")
+
+    return render_template("add_department.html", title="New Department", form=form, department=EmptyDepartment(),
+                           err=err)
+
+
+@app.route("/edit-dep/<int:which>", methods=["POST", "GET"])
+def put_department(which: int):
+    session = db_session.create_session()
+    dep = session.query(Department).filter(Department.id == which).one_or_none()
+    if dep is None:
+        abort(404)
+    err=None
+    form = DepartmentForm()
+    if form.validate_on_submit():
+        dep.title = form.title.data
+        dep.chief = form.chief.data
+        dep.members = form.members.data
+        dep.email = form.email.data
+        try:
+            session.commit()
+        except IntegrityError:
+            err = "Конфликт базы данных"
+        else:
+            return redirect("/departments")
+
+    return render_template("add_department.html", title="Edit department", form=form, department=dep, err=err)
+
+
+@app.get("/del-dep/<int:which>")
+def del_department(which: int):
+    session = db_session.create_session()
+    session.query(Department).filter(Department.id == which).delete()
+    session.commit()
+    return redirect("/departments")
+
+
+@app.get("/departments")
+def list_of_departments():
+    session = db_session.create_session()
+    departments = session.query(Department).all()
+
+    return render_template("departments.html", title="List of Departments", departments=departments)
 
 
 @app.get("/")
