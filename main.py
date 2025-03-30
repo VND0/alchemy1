@@ -1,5 +1,7 @@
+import os
 from datetime import datetime as dt, timedelta as td, date
 
+import requests
 from flask import Flask, render_template, redirect, request, abort
 from flask_login import LoginManager, login_required, logout_user, current_user, login_user
 from flask_restful import Api
@@ -61,12 +63,12 @@ def add_people():
     session = db_session.create_session()
 
     cap = User(surname="Scott", name="Ridley", age=21, position="captain", speciality="research_engineer",
-               address="module_1", email="scott_chief@mars.org")
+               address="module_1", email="scott_chief@mars.org", city_from="Moscow")
     session.add(cap)
 
     people = [
         User(surname=f"CrewS{i}", name=f"CrewN{i}", age=21 + i, position="crew", speciality=f"spec{i}",
-             address=f"module_{i}", email=f"email{i}@mars.org") for i in range(1, 5)
+             address=f"module_{i}", email=f"email{i}@mars.org", city_from="Syktyvkar") for i in range(1, 5)
     ]
     for p in people:
         session.add(p)
@@ -265,7 +267,7 @@ def put_department(which: int):
     dep = session.query(Department).filter(Department.id == which).one_or_none()
     if dep is None:
         abort(404)
-    err=None
+    err = None
     form = DepartmentForm()
     if form.validate_on_submit():
         dep.title = form.title.data
@@ -296,6 +298,33 @@ def list_of_departments():
     departments = session.query(Department).all()
 
     return render_template("departments.html", title="List of Departments", departments=departments)
+
+
+def save_image(city_name: str) -> None:
+    params = {"apikey": "6aec12ae-d3d4-4212-a4e4-70e7b8921e13", "lang": "en", "geocode": city_name, "format": "json"}
+    json_response = requests.get(f"https://geocode-maps.yandex.ru/v1", params=params).json()
+    bbox = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]["boundedBy"]["Envelope"]
+    x1, y1 = bbox["lowerCorner"].split()
+    x2, y2 = bbox["upperCorner"].split()
+
+    params = {"apikey": "d94029a4-b4b6-48db-b4b3-cc9085862f55", "bbox": f"{x1},{y1}~{x2},{y2}"}
+    img_response = requests.get(f"https://static-maps.yandex.ru/v1", params=params)
+    with open(f"static/img/{city_name}.jpg", "wb") as f:
+        f.write(img_response.content)
+
+
+@app.get("/users_show/<int:user_id>")
+def city_from(user_id: int):
+    response = requests.get(f"http://localhost:8080/api/users/{user_id}")
+    user_data = response.json()
+    if response.status_code // 100 != 2:
+        abort(response.status_code, user_data["message"])
+
+    city = user_data["city_from"]
+    if f"{city}.jpg" not in os.listdir("static/img"):
+        save_image(city)
+
+    return render_template("nostalgia.html", title="Hometown", user=user_data)
 
 
 @app.get("/")

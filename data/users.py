@@ -19,6 +19,7 @@ class User(SqlAlchemyBase, UserMixin):
     email = sa.Column(sa.String, unique=True)
     hashed_password = sa.Column(sa.String)
     modified_date = sa.Column(sa.DateTime)
+    city_from = sa.Column(sa.String, default="Saint Petersburg")
 
     departments = relationship("Department", back_populates="user")
 

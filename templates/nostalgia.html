@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div style="max-width: 800px;" class="mx-auto px-5">
+        <h2 class="text-center">Nostalgia</h2>
+        <h3 class="text-center">{{ user['surname'] }} {{ user['name'] }}</h3>
+        <h5 class="text-center">{{ user['city_from'] }}</h5>
+        <img src="{{ url_for('static', filename='img/' + user['city_from'] + ".jpg") }}" alt="{{ user['city_from'] }}"
+             class="mx-auto d-block"/>
+    </div>
+{% endblock %}
