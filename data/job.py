@@ -1,6 +1,7 @@
 from typing import Any
 
 import sqlalchemy as sa
+import sqlalchemy.orm as orm
 
 from .db_session import SqlAlchemyBase
 
@@ -24,6 +25,8 @@ class Job(EmptyJob, SqlAlchemyBase):
     start_date = sa.Column(sa.Date)
     end_date = sa.Column(sa.Date)
     is_finished = sa.Column(sa.Boolean)
+
+    categories = orm.relationship("Category", secondary="association", backref="jobs")
 
     def serialize(self, exclude: list[str] = None) -> dict[str, Any]:
         if exclude is None:

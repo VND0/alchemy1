@@ -1,4 +1,5 @@
 import os
+import random
 from datetime import datetime as dt, timedelta as td, date
 
 import requests
@@ -14,6 +15,7 @@ import jobs_resource
 import users_api
 import users_resource
 from data import db_session
+from data.category import Category
 from data.db_session import create_session
 from data.departments import Department, EmptyDepartment
 from data.job import Job, EmptyJob
@@ -81,10 +83,16 @@ def add_jobs():
     if session.query(Job).first():
         return
 
+    hazards = [Category(category=str(i)) for i in range(5)]
+    session.add_all(hazards)
+
     jobs = [
         Job(team_leader=1, work_size=15, collaborators="2, 3", start_date=dt.now(), is_finished=False,
             job="deployment of residential modules 1 and 2", end_date=(dt.now() + td(hours=10)))
     ]
+    for job in jobs:
+        job.categories.append(hazards[0])
+
     session.add_all(jobs)
     session.commit()
 
@@ -155,7 +163,7 @@ def logout():
 
 
 def add_job(form: JobForm):
-    print(form.work_size.data)
+    session = db_session.create_session()
     job = Job(
         team_leader=form.lead_id.data,
         job=form.title.data,
@@ -165,8 +173,12 @@ def add_job(form: JobForm):
         end_date=(dt.now() + td(hours=form.work_size.data)).date(),
         is_finished=form.is_finished.data,
     )
+
+    categories = session.query(Category).all()
+    picked = random.choice(categories)
+    job.categories.append(picked)
+
     try:
-        session = db_session.create_session()
         session.add(job)
         session.commit()
     except IntegrityError:

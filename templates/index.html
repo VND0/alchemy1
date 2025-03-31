@@ -10,7 +10,7 @@
             {% for job in jobs %}
                 <thead>
                 <tr>
-                    <td colspan="5">
+                    <td colspan="6">
                         <p class="align-self-start fs-3 m-0 fw-medium">Action #{{ loop.index }}</p>
                     </td>
                 </tr>
@@ -27,6 +27,7 @@
                     <th scope="col">Team leader</th>
                     <th scope="col">Duration</th>
                     <th scope="col">List of collaborators</th>
+                    <th scope="col">Hazard category</th>
                     <th scope="col">Is finished</th>
                 </tr>
                 </thead>
@@ -36,6 +37,7 @@
                     <td>{{ job.team_leader }}</td>
                     <td>{{ job.work_size }} hours</td>
                     <td>{{ job.collaborators }}</td>
+                    <td>{{ job.categories[0].category }}</td>
                     <td>Is {{ "" if job.is_finished else "not" }} finished</td>
                 </tr>
                 </tbody>
