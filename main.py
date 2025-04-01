@@ -327,7 +327,7 @@ def save_image(city_name: str) -> None:
 
 @app.get("/users_show/<int:user_id>")
 def city_from(user_id: int):
-    response = requests.get(f"http://localhost:8080/api/users/{user_id}")
+    response = requests.get(f"{request.host_url}/api/users/{user_id}")
     user_data = response.json()
     if response.status_code // 100 != 2:
         abort(response.status_code, user_data["message"])
